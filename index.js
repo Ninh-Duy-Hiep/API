@@ -9,6 +9,7 @@ dotenv.config();
 
 // Middleware
 app.use(express.json());
+app.use(express.urlencoded({ extended: true })); // Hỗ trợ form-data
 
 // Sử dụng các routes
 app.use('/api', medicineRoutes);

@@ -8,4 +8,10 @@ router.get('/medicines', medicineController.getAllMedicines);
 // Tìm kiếm thuốc theo từ khóa
 router.get('/medicines/search', medicineController.searchMedicines);
 
+// Thêm một thuốc
+router.post('/medicines', medicineController.addMedicine);
+
+// Thêm nhiều thuốc từ file CSV
+router.post('/medicines/upload', medicineController.upload.single('file'), medicineController.addMedicinesFromCSV);
+
 module.exports = router;

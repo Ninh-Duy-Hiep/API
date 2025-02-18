@@ -1,5 +1,21 @@
+const multer = require('multer');
+const path = require('path');
+const csv = require('csv-parser');
+const fs = require('fs');
 const Medicine = require('../models/Medicine');
 const { Op } = require('sequelize');
+
+// Cấu hình multer
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'uploads/'); // Lưu file vào thư mục 'uploads'
+  },
+  filename: (req, file, cb) => {
+    cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname)); // Đặt tên file
+  }
+});
+
+const upload = multer({ storage: storage }); // Sử dụng cấu hình storage đã tạo
 
 // Lấy danh sách tất cả thuốc
 const getAllMedicines = async (req, res) => {
@@ -60,4 +76,67 @@ const searchMedicines = async (req, res) => {
   }
 };
 
-module.exports = { getAllMedicines, searchMedicines };
+// Thêm một thuốc vào CSDL
+const addMedicine = async (req, res) => {
+  const { medicine_name, composition, uses, side_effects, image_url, manufacturer, excellent_review_percent, average_review_percent, poor_review_percent } = req.body;
+
+  if (!medicine_name) {
+    return res.status(400).json({ success: false, message: 'Tên thuốc là bắt buộc' });
+  }
+
+  try {
+    const existingMedicine = await Medicine.findOne({ where: { medicine_name } });
+    if (existingMedicine) {
+      return res.status(409).json({ success: false, message: 'Thuốc đã tồn tại trong CSDL' });
+    }
+
+    const newMedicine = await Medicine.create({
+      medicine_name, composition, uses, side_effects, image_url, manufacturer, excellent_review_percent, average_review_percent, poor_review_percent
+    });
+
+    res.status(201).json({ success: true, message: 'Thêm thuốc thành công', data: newMedicine });
+  } catch (err) {
+    console.error('Lỗi khi thêm thuốc:', err);
+    res.status(500).json({ success: false, message: 'Lỗi khi thêm thuốc', error: err });
+  }
+};
+
+// Thêm nhiều thuốc từ file CSV
+const addMedicinesFromCSV = async (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ success: false, message: 'Không có file nào được tải lên' });
+  }
+
+  const filePath = req.file.path;
+  const medicinesToAdd = [];
+
+  // Đọc file CSV
+  fs.createReadStream(filePath)
+    .pipe(csv())
+    .on('data', (row) => {
+      medicinesToAdd.push(row);
+    })
+    .on('end', async () => {
+      try {
+        const existingMedicines = await Medicine.findAll({ attributes: ['medicine_name'] });
+        const existingNames = existingMedicines.map(med => med.medicine_name);
+
+        // Lọc các thuốc chưa có trong CSDL
+        const newMedicines = medicinesToAdd.filter(med => !existingNames.includes(med.medicine_name));
+
+        if (newMedicines.length === 0) {
+          return res.status(409).json({ success: false, message: 'Tất cả thuốc trong file đã tồn tại trong CSDL' });
+        }
+
+        await Medicine.bulkCreate(newMedicines);
+        res.status(201).json({ success: true, message: 'Thêm thuốc thành công', data: newMedicines });
+      } catch (err) {
+        console.error('Lỗi khi thêm thuốc từ CSV:', err);
+        res.status(500).json({ success: false, message: 'Lỗi khi thêm thuốc từ CSV', error: err });
+      } finally {
+        fs.unlinkSync(filePath); // Xóa file sau khi xử lý xong
+      }
+    });
+};
+
+module.exports = { getAllMedicines, searchMedicines, addMedicine, addMedicinesFromCSV, upload };
