@@ -8,14 +8,14 @@ const { Op } = require('sequelize');
 // Cấu hình multer
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, 'uploads/'); // Lưu file vào thư mục 'uploads'
+    cb(null, 'uploads/'); 
   },
   filename: (req, file, cb) => {
-    cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname)); // Đặt tên file
+    cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname)); 
   }
 });
 
-const upload = multer({ storage: storage }); // Sử dụng cấu hình storage đã tạo
+const upload = multer({ storage: storage }); 
 
 // Lấy danh sách tất cả thuốc
 const getAllMedicines = async (req, res) => {
@@ -27,6 +27,38 @@ const getAllMedicines = async (req, res) => {
     });
   } catch (err) {
     console.error('Lỗi khi lấy danh sách thuốc', err);
+    res.status(500).json({
+      success: false,
+      message: 'Lỗi khi lấy danh sách thuốc',
+      error: err
+    });
+  }
+};
+
+// Lấy danh sách thuốc với phâ  n trang (10 thuốc mỗi lần)
+const getPaginatedMedicines = async (req, res) => {
+  const page = parseInt(req.query.page) || 1; // Trang hiện tại
+  const limit = 10; // Số thuốc mỗi trang
+  const offset = (page - 1) * limit;
+
+  try {
+    const { count, rows: medicines } = await Medicine.findAndCountAll({
+      limit,
+      offset,
+      order: [['id', 'ASC']]
+    });
+
+    res.status(200).json({
+      success: true,
+      totalMedicines: count,
+      totalPages: Math.ceil(count / limit),
+      currentPage: page,
+      hasNextPage: page < Math.ceil(count / limit), // Có trang tiếp theo không
+      hasPreviousPage: page > 1, // Có trang trước không
+      data: medicines
+    });
+  } catch (err) {
+    console.error('Lỗi khi lấy danh sách thuốc có phân trang', err);
     res.status(500).json({
       success: false,
       message: 'Lỗi khi lấy danh sách thuốc',
@@ -139,4 +171,4 @@ const addMedicinesFromCSV = async (req, res) => {
     });
 };
 
-module.exports = { getAllMedicines, searchMedicines, addMedicine, addMedicinesFromCSV, upload };
+module.exports = { getAllMedicines, getPaginatedMedicines, searchMedicines, addMedicine, addMedicinesFromCSV, upload };
