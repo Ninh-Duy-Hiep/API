@@ -7,3 +7,13 @@
 `http://localhost:3000/api/medicines` 
 # API thêm file thuốc
 `http://localhost:3000/api/medicines/upload`
+# API thêm thuốc vào danh sách yêu thích 
+`http://localhost:3000/api/favorites/add`
+# API lấy danh sách thuốc theo ng dùng
+`http://localhost:3000/api/favorites?user_id=?`
+# API xóa thuốc khỏi danh sách yêu thích 
+`http://localhost:3000/api/favorites/remove`
+# API đăng kí 
+`http://localhost:3000/api/auth/register`
+# API đăng nhập
+`http://localhost:3000/api/auth/login`
