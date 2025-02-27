@@ -5,6 +5,7 @@ const port = process.env.PORT || 3000;
 const medicineRoutes = require('./routes/medicineRoutes');
 const authRoutes = require('./routes/authRoutes');
 const favoriteRoutes = require('./routes/favoriteRoutes');
+const diseaseRoutes = require('./routes/diseaseRoutes');
 
 dotenv.config();
 
@@ -16,7 +17,7 @@ app.use(express.urlencoded({ extended: true })); // Hỗ trợ form-data
 app.use('/api', medicineRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api', favoriteRoutes);
-
+app.use('/api', diseaseRoutes);
 // Lắng nghe server
 app.listen(port, () => {
   console.log(`Server đang chạy trên port ${port}`);

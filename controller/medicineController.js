@@ -35,7 +35,7 @@ const getAllMedicines = async (req, res) => {
   }
 };
 
-// Lấy danh sách thuốc với phâ  n trang (10 thuốc mỗi lần)
+// Lấy danh sách thuốc với phân trang (10 thuốc mỗi lần)
 const getPaginatedMedicines = async (req, res) => {
   const page = parseInt(req.query.page) || 1; // Trang hiện tại
   const limit = 10; // Số thuốc mỗi trang

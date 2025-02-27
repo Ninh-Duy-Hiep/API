@@ -17,3 +17,11 @@
 `http://localhost:3000/api/auth/register`
 # API đăng nhập
 `http://localhost:3000/api/auth/login`
+# API lấy danh sách bệnh 
+`http://localhost:3000/api/diseases`
+# API tìm kiếm bệnh
+`http://localhost:3000/api/diseases/search?searchTerm=keyword`
+# API thêm bệnh
+`http://localhost:3000/api/diseases` 
+# API thêm file bệnh 
+`http://localhost:3000/api/diseases/upload`
