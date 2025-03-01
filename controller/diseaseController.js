@@ -104,7 +104,7 @@ const addDisease = async (req, res) => {
   }
 };
 
-// Thêm nhiều bệnhbệnh từ file CSV
+// Thêm nhiều bệnh từ file CSV
 const addDiseasesFromCSV = async (req, res) => {
   if (!req.file) {
     return res.status(400).json({ success: false, message: 'Không có file nào được tải lên' });
