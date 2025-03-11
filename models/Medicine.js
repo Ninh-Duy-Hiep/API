@@ -1,46 +1,50 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');  
 
-// Định nghĩa model cho bảng `cleaned_medicine_details`
 const Medicine = sequelize.define('Medicine', {
-  medicine_name: {
-    type: DataTypes.STRING,
+  id: {
+    type: DataTypes.INTEGER,
+    autoIncrement: true,
+    primaryKey: true
+  },
+  ten_thuoc: {
+    type: DataTypes.STRING(255),
     allowNull: false,
   },
-  composition: {
-    type: DataTypes.STRING,
+  thanh_phan: {
+    type: DataTypes.STRING(500),
     allowNull: true,
   },
-  uses: {
+  cong_dung: {
     type: DataTypes.TEXT,
     allowNull: true,
   },
-  side_effects: {
+  tac_dung_phu: {
     type: DataTypes.TEXT,
     allowNull: true,
   },
-  image_url: {
-    type: DataTypes.STRING,
+  hinh_anh: {
+    type: DataTypes.STRING(500),
     allowNull: true,
   },
-  manufacturer: {
-    type: DataTypes.STRING,
+  nha_san_xuat: {
+    type: DataTypes.STRING(255),
     allowNull: true,
   },
-  excellent_review_percent: {
-    type: DataTypes.FLOAT,
+  danh_gia_tot: {
+    type: DataTypes.DECIMAL(5,2),
     allowNull: true,
   },
-  average_review_percent: {
-    type: DataTypes.FLOAT,
+  danh_gia_trung_binh: {
+    type: DataTypes.DECIMAL(5,2),
     allowNull: true,
   },
-  poor_review_percent: {
-    type: DataTypes.FLOAT,
+  danh_gia_kem: {
+    type: DataTypes.DECIMAL(5,2),
     allowNull: true,
-  },
+  }
 }, {
-  tableName: 'cleaned_medicine_details',  
+  tableName: 'cleaned_medicine',  
   timestamps: false,  
 });
 

@@ -128,7 +128,7 @@ const addDiseasesFromCSV = async (req, res) => {
         const newDiseases = diseasesToAdd.filter(med => !existingNames.includes(med.ten_benh));
 
         if (newDiseases.length === 0) {
-          return res.status(409).json({ success: false, message: 'Tất cả bệnh trong file đã tồn tại trong CSDL' });
+          return res.status(409).json({ success: false, message: 'Tất cả bệnh trong file đã tồn tại !' });
         }
 
         await Disease.bulkCreate(newDiseases);

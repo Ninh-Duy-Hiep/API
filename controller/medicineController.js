@@ -81,7 +81,7 @@ const searchMedicines = async (req, res) => {
   try {
     const medicines = await Medicine.findAll({
       where: {
-        medicine_name: {
+        ten_thuoc: {
           [Op.like]: `%${searchTerm}%`  
         }
       }
@@ -110,20 +110,20 @@ const searchMedicines = async (req, res) => {
 
 // Thêm một thuốc vào CSDL
 const addMedicine = async (req, res) => {
-  const { medicine_name, composition, uses, side_effects, image_url, manufacturer, excellent_review_percent, average_review_percent, poor_review_percent } = req.body;
+  const { ten_thuoc, thanh_phan, cong_dung, tac_dung_phu, hinh_anh, nha_san_xuat, danh_gia_tot, danh_gia_trung_binh, danh_gia_kem } = req.body;
 
-  if (!medicine_name) {
+  if (!ten_thuoc) {
     return res.status(400).json({ success: false, message: 'Tên thuốc là bắt buộc' });
   }
 
   try {
-    const existingMedicine = await Medicine.findOne({ where: { medicine_name } });
+    const existingMedicine = await Medicine.findOne({ where: { ten_thuoc } });
     if (existingMedicine) {
       return res.status(409).json({ success: false, message: 'Thuốc đã tồn tại trong CSDL' });
     }
 
     const newMedicine = await Medicine.create({
-      medicine_name, composition, uses, side_effects, image_url, manufacturer, excellent_review_percent, average_review_percent, poor_review_percent
+      ten_thuoc, thanh_phan, cong_dung, tac_dung_phu, hinh_anh, nha_san_xuat, danh_gia_tot, danh_gia_trung_binh, danh_gia_kem 
     });
 
     res.status(201).json({ success: true, message: 'Thêm thuốc thành công', data: newMedicine });
@@ -150,14 +150,14 @@ const addMedicinesFromCSV = async (req, res) => {
     })
     .on('end', async () => {
       try {
-        const existingMedicines = await Medicine.findAll({ attributes: ['medicine_name'] });
-        const existingNames = existingMedicines.map(med => med.medicine_name);
+        const existingMedicines = await Medicine.findAll({ attributes: ['ten_thuoc'] });
+        const existingNames = existingMedicines.map(med => med.ten_thuoc);
 
         // Lọc các thuốc chưa có trong CSDL
-        const newMedicines = medicinesToAdd.filter(med => !existingNames.includes(med.medicine_name));
+        const newMedicines = medicinesToAdd.filter(med => !existingNames.includes(med.ten_thuoc));
 
         if (newMedicines.length === 0) {
-          return res.status(409).json({ success: false, message: 'Tất cả thuốc trong file đã tồn tại trong CSDL' });
+          return res.status(409).json({ success: false, message: 'Tất cả thuốc trong file đã tồn tại !' });
         }
 
         await Medicine.bulkCreate(newMedicines);
