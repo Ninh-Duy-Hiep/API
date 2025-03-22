@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const diseaseController = require('../controller/diseaseController');
+
 // Lấy danh sách tất cả bệnh
 router.get('/diseases', diseaseController.getAllDiseases);
 // Tìm kiếm bệnh  

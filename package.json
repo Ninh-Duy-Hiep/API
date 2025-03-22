@@ -1,0 +1,33 @@
+{
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "bcryptjs": "^3.0.2",
+    "csv-parser": "^3.2.0",
+    "dotenv": "^16.4.7",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^1.4.5-lts.1",
+    "mysql2": "^3.13.0",
+    "sequelize": "^6.37.6",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1"
+  },
+  "name": "pharma_check-(-moblie-)",
+  "version": "1.0.0",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ninh-Duy-Hiep/API.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Ninh-Duy-Hiep/API/issues"
+  },
+  "homepage": "https://github.com/Ninh-Duy-Hiep/API#readme",
+  "description": ""
+}

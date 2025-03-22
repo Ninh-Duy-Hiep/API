@@ -34,25 +34,31 @@
 
 ## ❤️ **API Danh sách yêu thích (Favorites)**
 
-### 🔹 **Thuốc yêu thích (Favorites Disease)**
-- **Thêm thuốc vào danh sách yêu thích**  
+### 🔹 **Bệnh yêu thích (Favorites Disease)**
+- **Thêm bệnh vào danh sách yêu thích**  
   `POST http://localhost:3000/api/favoritesDisease/add`
 
-- **Lấy danh sách thuốc theo người dùng**  
+- **Lấy danh sách bệnh theo người dùng**  
   `GET http://localhost:3000/api/favoritesDisease?user_id=USER_ID`
 
-- **Xóa thuốc khỏi danh sách yêu thích**  
+- **Xóa bệnh khỏi danh sách yêu thích**  
   `DELETE http://localhost:3000/api/favoritesDisease/remove`
 
-### 🔹 **Bệnh yêu thích (Favorites Medicine)**
-- **Thêm bệnh vào danh sách yêu thích**  
+- **Thay đổi ghi chú bệnh trong danh sách yêu thích**
+  `PUT http://localhost:3000/api/favoritesDisease/update_note`
+
+### 🔹 **Thuốc yêu thích (Favorites Medicine)**
+- **Thêm thuốc vào danh sách yêu thích**  
   `POST http://localhost:3000/api/favoritesMedicine/add`
 
-- **Lấy danh sách bệnh theo người dùng**  
+- **Lấy danh sách thuốc theo người dùng**  
   `GET http://localhost:3000/api/favoritesMedicine?user_id=USER_ID`
 
-- **Xóa bệnh khỏi danh sách yêu thích**  
+- **Xóa thuốc khỏi danh sách yêu thích**  
   `DELETE http://localhost:3000/api/favoritesMedicine/remove`
+
+- **Thay đổi ghi chú thuốc trong danh sách yêu thích**
+  `PUT http://localhost:3000/api/favoritesMedicine/update_note`
 
 ---
 

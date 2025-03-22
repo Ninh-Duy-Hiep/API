@@ -117,4 +117,40 @@ const removeFavoriteDisease = async (req, res) => {
   }
 };
 
-module.exports = { addFavoriteDisease, getFavoriteDisease, removeFavoriteDisease };
+// Thay đổi ghi chú của bệnh yêu thích
+const updateFavoriteDiseaseNote = async (req, res) => {
+  const { user_id, disease_id, note } = req.body;
+
+  if (!user_id || !disease_id || note === undefined) {
+    return res.status(400).json({ success: false, message: "Thiếu user_id, disease_id hoặc note" });
+  }
+
+  try {
+    const favorite = await FavoriteDisease.findOne({
+      where: { user_id, disease_id },
+    });
+
+    if (!favorite) {
+      return res.status(404).json({ success: false, message: "BệnhBệnh không có trong danh sách yêu thích" });
+    }
+
+    // Cập nhật ghi chú
+    favorite.note = note;
+    await favorite.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Cập nhật ghi chú thành công",
+      data: favorite,
+    });
+  } catch (err) {
+    console.error("Lỗi khi cập nhật ghi chú:", err);
+    res.status(500).json({
+      success: false,
+      message: "Lỗi khi cập nhật ghi chú",
+      error: err,
+    });
+  }
+};
+
+module.exports = { addFavoriteDisease, getFavoriteDisease, removeFavoriteDisease, updateFavoriteDiseaseNote };

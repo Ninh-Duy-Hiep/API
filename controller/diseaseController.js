@@ -20,7 +20,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-// Lấy danh sách tất cả bệnhbệnh
+// Lấy danh sách tất cả bệnh
 const getAllDiseases = async (req, res) => {
   try {
     const diseases = await Disease.findAll();

@@ -74,7 +74,7 @@ const getFavoriteMedicines = async (req, res) => {
   }
 };
 
-// xóa thuốc khỏi danh sách yêy thích
+// xóa thuốc khỏi danh sách yêu thích
 const removeFavoriteMedicine = async (req, res) => {
   const { user_id, medicine_id } = req.body;
 
@@ -117,4 +117,40 @@ const removeFavoriteMedicine = async (req, res) => {
   }
 };
 
-module.exports = { addFavoriteMedicine, getFavoriteMedicines, removeFavoriteMedicine };
+// Thay đổi ghi chú của thuốc yêu thích
+const updateFavoriteMedicineNote = async (req, res) => {
+  const { user_id, medicine_id, note } = req.body;
+
+  if (!user_id || !medicine_id || note === undefined) {
+    return res.status(400).json({ success: false, message: "Thiếu user_id, medicine_id hoặc note" });
+  }
+
+  try {
+    const favorite = await FavoriteMedicine.findOne({
+      where: { user_id, medicine_id },
+    });
+
+    if (!favorite) {
+      return res.status(404).json({ success: false, message: "Thuốc không có trong danh sách yêu thích" });
+    }
+
+    // Cập nhật ghi chú
+    favorite.note = note;
+    await favorite.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Cập nhật ghi chú thành công",
+      data: favorite,
+    });
+  } catch (err) {
+    console.error("Lỗi khi cập nhật ghi chú:", err);
+    res.status(500).json({
+      success: false,
+      message: "Lỗi khi cập nhật ghi chú",
+      error: err,
+    });
+  }
+};
+
+module.exports = { addFavoriteMedicine, getFavoriteMedicines, removeFavoriteMedicine, updateFavoriteMedicineNote };
