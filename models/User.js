@@ -1,9 +1,10 @@
-const { DataTypes } = require("sequelize");
+const { DataTypes, Model } = require("sequelize");
 const sequelize = require("../config/database");
 const bcrypt = require("bcrypt");
 
-const User = sequelize.define(
-  "User",
+class User extends Model {}
+
+User.init(
   {
     id: {
       type: DataTypes.INTEGER,
@@ -26,6 +27,7 @@ const User = sequelize.define(
     },
   },
   {
+    sequelize,
     tableName: "users",
     timestamps: false,
   }

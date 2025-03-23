@@ -1,12 +1,13 @@
-const { DataTypes } = require("sequelize");
+const { DataTypes, Model } = require("sequelize");
 const sequelize = require("../config/database");
-const Label = require("./Label");
 const User = require("./User");
+const Label = require("./Label");
 const FavoriteDisease = require("./Favorite_Disease");
 const FavoriteMedicine = require("./Favorite_Medicine");
 
-const FavoriteLabel = sequelize.define(
-  "FavoriteLabel",
+class FavoriteLabel extends Model {}
+
+FavoriteLabel.init(
   {
     id: {
       type: DataTypes.INTEGER,
@@ -47,14 +48,17 @@ const FavoriteLabel = sequelize.define(
     },
   },
   {
+    sequelize,
     tableName: "favorite_label",
     timestamps: false,
   }
 );
 
-FavoriteLabel.belongsTo(User, { foreignKey: "user_id" });
-FavoriteLabel.belongsTo(Label, { foreignKey: "label_id" });
-FavoriteLabel.belongsTo(FavoriteDisease, { foreignKey: "favorite_disease_id" });
-FavoriteLabel.belongsTo(FavoriteMedicine, { foreignKey: "favorite_medicine_id" });
-
 module.exports = FavoriteLabel;
+
+// FavoriteLabel.belongsTo(User, { foreignKey: "user_id" });
+// FavoriteLabel.belongsTo(Label, { foreignKey: "label_id" });
+// FavoriteLabel.belongsTo(FavoriteDisease, { foreignKey: "favorite_disease_id" });
+// FavoriteLabel.belongsTo(FavoriteMedicine, {
+//   foreignKey: "favorite_medicine_id",
+// });

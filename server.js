@@ -9,6 +9,14 @@ const favoriteDiseaseRoutes = require('./routes/favorite_DiseaseRoutes');
 const favoriteMedicineRoutes = require('./routes/favorite_MedicineRoutes');
 const diseaseRoutes = require('./routes/diseaseRoutes');
 const labelRoutes = require('./routes/labelRoutes');
+require('./models/User');
+require('./models/Label');
+require('./models/Favorite_Disease');
+require('./models/Favorite_Medicine');
+require('./models/Favorite_Label');
+
+const setupAssociations = require('./models/associations');
+setupAssociations();
 
 dotenv.config();
 
