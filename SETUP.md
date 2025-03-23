@@ -88,3 +88,6 @@
 
 - **Gán nhãn dán vào thuốc hoặc bệnh**  
   `POST http://localhost:3000/api/labels/assign`
+
+- **Danh sách nhãn gán với thuốc hoặc bệnh**
+  `GET http://localhost:3000/api/labels/details?user_id=?`
