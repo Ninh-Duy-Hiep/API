@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chatbot Tra Cứu Thuốc</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        background: #eef2f3;
+      }
+      .chat-container {
+        width: 50%;
+        margin: auto;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        padding: 10px;
+        background: white;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+      .chat-box {
+        height: 300px;
+        overflow-y: auto;
+        border-bottom: 1px solid #ccc;
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+      }
+      .message {
+        margin: 5px 0;
+        padding: 10px;
+        border-radius: 10px;
+        max-width: 80%;
+      }
+      .user-message {
+        background: #007bff;
+        color: white;
+        align-self: flex-end;
+      }
+      .bot-message {
+        background: #f1f1f1;
+        color: black;
+        align-self: flex-start;
+      }
+      .input-container {
+        margin-top: 10px;
+        display: flex;
+      }
+      input {
+        flex: 1;
+        padding: 10px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+      }
+      button {
+        padding: 10px;
+        background: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-left: 5px;
+      }
+      button:hover {
+        background: #0056b3;
+      }
+      .typing {
+        font-style: italic;
+        color: gray;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Chatbot Tra Cứu Thuốc</h2>
+    <div class="chat-container">
+      <div class="chat-box" id="chat-box"></div>
+      <div class="input-container">
+        <input
+          type="text"
+          id="user-input"
+          placeholder="Nhập câu hỏi..."
+          onkeypress="handleKeyPress(event)"
+        />
+        <button onclick="sendMessage()">Gửi</button>
+      </div>
+    </div>
+
+    <script>
+      async function sendMessage() {
+        let userInput = document.getElementById("user-input").value;
+        if (userInput.trim() === "") return;
+
+        let chatBox = document.getElementById("chat-box");
+
+        let userMessage = document.createElement("div");
+        userMessage.classList.add("message", "user-message");
+        userMessage.textContent = userInput;
+        chatBox.appendChild(userMessage);
+
+        document.getElementById("user-input").value = "";
+
+        let typingMessage = document.createElement("div");
+        typingMessage.classList.add("message", "bot-message", "typing");
+        typingMessage.textContent = "Đang trả lời...";
+        chatBox.appendChild(typingMessage);
+
+        chatBox.scrollTop = chatBox.scrollHeight;
+
+        try {
+          let response = await fetch(
+            `http://localhost:8000/chatbot/?question=${encodeURIComponent(
+              userInput
+            )}`,
+            {
+              method: "GET",
+              headers: { Accept: "application/json" },
+            }
+          );
+
+          let data = await response.json();
+          console.log("API Response:", data);
+
+          chatBox.removeChild(typingMessage);
+
+          let botMessage = document.createElement("div");
+          botMessage.classList.add("message", "bot-message");
+          botMessage.textContent = data.answer || "Không có phản hồi.";
+          chatBox.appendChild(botMessage);
+        } catch (error) {
+          console.error("Lỗi:", error);
+          chatBox.removeChild(typingMessage);
+          let botMessage = document.createElement("div");
+          botMessage.classList.add("message", "bot-message");
+          botMessage.textContent = "Lỗi kết nối đến chatbot!";
+          chatBox.appendChild(botMessage);
+        }
+
+        chatBox.scrollTop = chatBox.scrollHeight;
+      }
+
+      function handleKeyPress(event) {
+        if (event.key === "Enter") {
+          sendMessage();
+        }
+      }
+    </script>
+  </body>
+</html>
