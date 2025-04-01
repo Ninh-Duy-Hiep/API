@@ -56,9 +56,4 @@ FavoriteLabel.init(
 
 module.exports = FavoriteLabel;
 
-// FavoriteLabel.belongsTo(User, { foreignKey: "user_id" });
-// FavoriteLabel.belongsTo(Label, { foreignKey: "label_id" });
-// FavoriteLabel.belongsTo(FavoriteDisease, { foreignKey: "favorite_disease_id" });
-// FavoriteLabel.belongsTo(FavoriteMedicine, {
-//   foreignKey: "favorite_medicine_id",
-// });
+

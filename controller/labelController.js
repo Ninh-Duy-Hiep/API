@@ -117,11 +117,7 @@ const assignLabel = async (req, res) => {
 
   console.log("📩 Dữ liệu nhận được từ client:", req.body);
 
-  if (
-    !user_id ||
-    !label_id ||
-    (!favorite_disease_id && !favorite_medicine_id)
-  ) {
+  if (!user_id || !label_id) {
     console.log("❌ LỖI: Thiếu thông tin cần thiết!");
     return res
       .status(400)
@@ -132,123 +128,78 @@ const assignLabel = async (req, res) => {
     let actualFavoriteMedicineId = null;
     let actualFavoriteDiseaseId = null;
 
-    // ✅ Kiểm tra thuốc yêu thích
+    // ✅ Nếu có truyền favorite_medicine_id, kiểm tra xem nó có trong danh sách yêu thích không
     if (favorite_medicine_id) {
-      console.log(
-        `🔎 Kiểm tra xem thuốc (medicine_id = ${favorite_medicine_id}) có trong danh sách yêu thích không...`
-      );
-
       const favoriteMedicine = await FavoriteMedicine.findOne({
         where: { medicine_id: favorite_medicine_id, user_id: user_id },
       });
 
       if (!favoriteMedicine) {
-        console.log(
-          `❌ LỖI: Không tìm thấy thuốc yêu thích với medicine_id = ${favorite_medicine_id}!`
-        );
         return res.status(400).json({
           success: false,
           message: `Thuốc (medicine_id = ${favorite_medicine_id}) chưa được thêm vào danh sách yêu thích!`,
         });
       }
 
-      actualFavoriteMedicineId = favoriteMedicine.id; // ✅ Lấy ID của bản ghi trong bảng FavoriteMedicine
+      actualFavoriteMedicineId = favoriteMedicine.id;
     }
 
-    // ✅ Kiểm tra bệnh yêu thích
+    // ✅ Nếu có truyền favorite_disease_id, kiểm tra xem nó có trong danh sách yêu thích không
     if (favorite_disease_id) {
-      console.log(
-        `🔎 Kiểm tra xem bệnh (disease_id = ${favorite_disease_id}) có trong danh sách yêu thích không...`
-      );
-
       const favoriteDisease = await FavoriteDisease.findOne({
         where: { disease_id: favorite_disease_id, user_id: user_id },
       });
 
       if (!favoriteDisease) {
-        console.log(
-          `❌ LỖI: Không tìm thấy bệnh yêu thích với disease_id = ${favorite_disease_id}!`
-        );
         return res.status(400).json({
           success: false,
           message: `Bệnh (disease_id = ${favorite_disease_id}) chưa được thêm vào danh sách yêu thích!`,
         });
       }
 
-      actualFavoriteDiseaseId = favoriteDisease.id; // ✅ Lấy ID của bản ghi trong bảng FavoriteDisease
+      actualFavoriteDiseaseId = favoriteDisease.id;
     }
 
-    console.log("🔍 Kiểm tra xem thuốc/bệnh đã có nhãn nào chưa...");
-
-    let whereCondition = { user_id };
-    if (actualFavoriteMedicineId)
-      whereCondition.favorite_medicine_id = actualFavoriteMedicineId;
-    if (actualFavoriteDiseaseId)
-      whereCondition.favorite_disease_id = actualFavoriteDiseaseId;
-
-    const existingLabelForItem = await FavoriteLabel.findOne({
-      where: whereCondition,
+    // 🚀 Kiểm tra xem trong nhãn này đã có bệnh hoặc thuốc này chưa
+    const existingLabelEntry = await FavoriteLabel.findOne({
+      where: {
+        user_id,
+        label_id,
+        favorite_medicine_id: actualFavoriteMedicineId || null,
+        favorite_disease_id: actualFavoriteDiseaseId || null,
+      },
     });
 
-    if (existingLabelForItem) {
-      console.log("⚠️ Thuốc hoặc bệnh đã có một nhãn khác!");
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "Thuốc hoặc bệnh đã có một nhãn khác!",
-        });
+    if (existingLabelEntry) {
+      return res.status(400).json({
+        success: false,
+        message: "Thuốc hoặc bệnh này đã có trong nhãn!",
+      });
     }
 
-    console.log("🔍 Kiểm tra nếu nhãn đã chứa thuốc hoặc bệnh này rồi...");
-
-    let sameItemCondition = { user_id, label_id };
-    if (actualFavoriteMedicineId)
-      sameItemCondition.favorite_medicine_id = actualFavoriteMedicineId;
-    if (actualFavoriteDiseaseId)
-      sameItemCondition.favorite_disease_id = actualFavoriteDiseaseId;
-
-    const existingSameItemInLabel = await FavoriteLabel.findOne({
-      where: sameItemCondition,
-    });
-
-    if (existingSameItemInLabel) {
-      console.log("⚠️ Nhãn này đã chứa thuốc hoặc bệnh này rồi!");
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "Nhãn này đã chứa thuốc hoặc bệnh này rồi!",
-        });
-    }
-
-    console.log("✅ Bắt đầu thêm dữ liệu vào bảng `favorite_label`...");
+    // ✅ Gán nhãn mới (thêm bản ghi mới)
     const newFavoriteLabel = await FavoriteLabel.create({
       user_id,
       label_id,
-      favorite_disease_id: actualFavoriteDiseaseId,
-      favorite_medicine_id: actualFavoriteMedicineId,
+      favorite_disease_id: actualFavoriteDiseaseId || null,
+      favorite_medicine_id: actualFavoriteMedicineId || null,
     });
 
-    console.log("🎉 Gán nhãn thành công!", newFavoriteLabel);
-    res
-      .status(201)
-      .json({
-        success: true,
-        message: "Gán nhãn thành công",
-        data: newFavoriteLabel,
-      });
+    return res.status(201).json({
+      success: true,
+      message: "Gán nhãn thành công",
+      data: newFavoriteLabel,
+    });
   } catch (err) {
     console.error("❌ LỖI khi gán nhãn:", err.message, err.stack);
-    res
-      .status(500)
-      .json({
-        success: false,
-        message: "Lỗi khi gán nhãn",
-        error: err.message,
-      });
+    return res.status(500).json({
+      success: false,
+      message: "Lỗi khi gán nhãn",
+      error: err.message,
+    });
   }
 };
+
 
 // lấy danh sách nhãn gán với thuốc hoặc bệnh 
 const getLabelDetails = async (req, res) => {
@@ -317,8 +268,6 @@ const getLabelDetails = async (req, res) => {
     });
   }
 };
-
-
 
 
 

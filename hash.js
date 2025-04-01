@@ -8,4 +8,4 @@ async function hashPassword(plainPassword) {
 }
 
 // Test thử
-hashPassword("mypassword123").then(hash => console.log("Hashed Password:", hash));
+hashPassword("12345").then(hash => console.log("Hashed Password:", hash));
